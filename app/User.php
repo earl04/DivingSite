@@ -5,6 +5,8 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\UserAssignedRole;
+use Auth;
 
 class User extends Authenticatable
 {
@@ -16,7 +18,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'first_name', 'middle_name', 'last_name', 'email', 'password',
     ];
 
     /**
@@ -40,5 +42,15 @@ class User extends Authenticatable
     public function user_roles()
     {
         return $this->hasMany('App\UserAssignedRole', 'user_id', 'id');
+    }
+
+    public function isAdmin()
+    {
+        $assignedRole = UserAssignedRole::where(
+            ['user_id'      => Auth::user()->id,
+             'user_role'    => 2
+            ])->get();
+
+        return $assignedRole;
     }
 }
